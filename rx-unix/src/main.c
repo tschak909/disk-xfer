@@ -30,7 +30,7 @@ int termio_init(char* serial_filename)
 {
   struct termios tio;
 
-  memset(&stdio,0,sizeof(tio));
+  memset(&tio,0,sizeof(tio));
   tio.c_iflag=0;
   tio.c_oflag=0;
   tio.c_cflag=CS8|CREAD|CLOCAL;
@@ -57,14 +57,14 @@ void print_args(void)
 int main(int argc, char* argv[])
 {
   // Display args if not provided.
-  if (argc!=2)
+  if (argc!=3)
     {
       print_args();
       exit(1);
     }
   else
     {
-      termio_init();
+      termio_init(argv[1]);
       return xmodem_receive();
     }
 }
