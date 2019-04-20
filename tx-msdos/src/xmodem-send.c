@@ -122,11 +122,11 @@ void xmodem_state_block(void)
   unsigned short calced_crc;
   if (int13_read_sector(cylinder,head,sector,buf)==0)
     {
-      printf("Sending C: %4d, H: %2d, S: %2d...",cylinder,head,sector);
+      printf("Sending Cylinder: %4d, Head: %2d, Sector: %2d...",cylinder,head,sector);
 
       int14_send_byte(0x01);  // SOH
-      int14_send_byte(block_num&0xFF); // block # (mod 256)
-      int14_send_byte((0xFF-(block_num&0xFF))); // 0xFF - BLOCK # (simple checksum)
+      int14_send_byte(block_num); // block # (mod 256)
+      int14_send_byte(0xFF-block_num); // 0xFF - BLOCK # (simple checksum)
 
       for (i=0;i<512;i++)     // Send the data
 	int14_send_byte(buf[i]);
@@ -158,6 +158,8 @@ void xmodem_state_check(void)
 	{
 	case 0x06: // ACK
 	  printf("ACK!\n");
+	  block_num++;
+	  block_num&=0xff;
 	  state=BLOCK;
 	  xmodem_set_next_sector();  // so if we're at end, it can be overridden.
 	  break;
@@ -183,7 +185,7 @@ void xmodem_set_next_sector(void)
   if (sector>=geometry.s)
     {
       sector=1;
-      if (head>geometry.h)
+      if (head>=geometry.h)
 	{
 	  head=0;
 	  if (cylinder>geometry.c)

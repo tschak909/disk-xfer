@@ -21,8 +21,9 @@ ProtocolState state=START;
 int serial_fd;
 unsigned char b;
 char* filename;
+long block_num=1;
 
-char* buf;
+unsigned char* buf;
 
 /**
  * Calculate 16-bit CRC
@@ -74,7 +75,7 @@ void xmodem_state_start(void)
 void xmodem_state_block(void)
 {
   int i=0;
-  printf("Receiving next block...");
+  printf("Receiving next block # %d...",block_num);
   for (i=0;i<BUFFER_SIZE;i++)
     {
       read(serial_fd,&buf[i],1);
@@ -89,10 +90,13 @@ void xmodem_state_block(void)
 unsigned char xmodem_check_crc(void)
 {
   char* data_ptr=&buf[3];
-  short* crc_ptr=(short *)&buf[258]; // 516 / 2
-  short crc=xmodem_calc_crc(buf,512);
+  unsigned short crc1;
+  unsigned short crc2=xmodem_calc_crc(data_ptr,512);
 
-  if (*crc_ptr==crc)
+  crc1=buf[515]<<8;
+  crc1|=buf[516];
+  
+  if (crc1==crc2)
     return 1;
   else
     return 0;
@@ -117,20 +121,24 @@ void xmodem_write_block_to_disk(void)
  */
 void xmodem_state_check(void)
 {
+  unsigned char block_checksum=buf[1]+buf[2];
   if (buf[0]!=0x01) // Check for SOH
     {
+      printf("Bad SOH!\n");
       xmodem_send_byte(0x15); // Send NAK
       state=BLOCK;
       return;
     }
-  else if (buf[1]+buf[2]!=0xFF) // Check the checksum
+  else if (block_checksum!=0xFF) // Check the checksum
     {
+      printf("Bad Block Checksum! %u + %u = %u\n",buf[1],buf[2],buf[1]+buf[2]);
       xmodem_send_byte(0x15); // Send NAK
       state=BLOCK;
       return;
     }
   else if (xmodem_check_crc()==0) // Check the CRC.
     {
+      printf("Bad CRC!\n");
       xmodem_send_byte(0x15); // Send NAK
       state=BLOCK;
       return;
@@ -141,6 +149,8 @@ void xmodem_state_check(void)
   xmodem_write_block_to_disk();
     
   xmodem_send_byte(0x06);
+  printf("ACK!\n");
+  block_num++;
   state=BLOCK;
 }
 
