@@ -1,0 +1,41 @@
+!define BLANK ""
+C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos\int13.obj : C:\cygwin64\&
+home\thomc\Workspace\disk-xfer\tx-msdos\src\int13.c .AUTODEPEND
+ @C:
+ cd C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos
+ *wcc src\int13.c -i="C:\WATCOM/h" -w4 -e25 -zq -otexan -d1 -bt=dos -fo=.obj&
+ -ms
+
+C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos\int14.obj : C:\cygwin64\&
+home\thomc\Workspace\disk-xfer\tx-msdos\src\int14.c .AUTODEPEND
+ @C:
+ cd C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos
+ *wcc src\int14.c -i="C:\WATCOM/h" -w4 -e25 -zq -otexan -d1 -bt=dos -fo=.obj&
+ -ms
+
+C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos\main.obj : C:\cygwin64\h&
+ome\thomc\Workspace\disk-xfer\tx-msdos\src\main.c .AUTODEPEND
+ @C:
+ cd C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos
+ *wcc src\main.c -i="C:\WATCOM/h" -w4 -e25 -zq -otexan -d1 -bt=dos -fo=.obj &
+-ms
+
+C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos\xmodem-send.obj : C:\cyg&
+win64\home\thomc\Workspace\disk-xfer\tx-msdos\src\xmodem-send.c .AUTODEPEND
+ @C:
+ cd C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos
+ *wcc src\xmodem-send.c -i="C:\WATCOM/h" -w4 -e25 -zq -otexan -d1 -bt=dos -f&
+o=.obj -ms
+
+C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos\tx.com : C:\cygwin64\hom&
+e\thomc\Workspace\disk-xfer\tx-msdos\int13.obj C:\cygwin64\home\thomc\Worksp&
+ace\disk-xfer\tx-msdos\int14.obj C:\cygwin64\home\thomc\Workspace\disk-xfer\&
+tx-msdos\main.obj C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos\xmodem&
+-send.obj .AUTODEPEND
+ @C:
+ cd C:\cygwin64\home\thomc\Workspace\disk-xfer\tx-msdos
+ @%write tx.lk1 FIL int13.obj,int14.obj,main.obj,xmodem-send.obj
+ @%append tx.lk1 
+ *wlink name tx sys dos com op m libf cstart_t op maxe=25 op q op symf @tx.l&
+k1
+
