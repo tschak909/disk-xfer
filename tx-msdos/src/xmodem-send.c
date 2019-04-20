@@ -83,7 +83,6 @@ void xmodem_send(void)
 	case END:
 	  break;
 	}
-      delay(5);
     }
   
   free(buf);
