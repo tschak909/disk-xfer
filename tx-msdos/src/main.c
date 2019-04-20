@@ -14,13 +14,15 @@
 #include "int14.h"
 #include "xmodem-send.h"
 
+#define BUFFER_SIZE 512
+
 int main(int argc, char* argv[])
 {
   DiskGeometry geometry;
   char* buf;
   int i=0;
 
-  buf=malloc(512);
+  buf=malloc(BUFFER_SIZE);
   
   if (int13_disk_geometry(&geometry)==0)
     {
@@ -31,7 +33,7 @@ int main(int argc, char* argv[])
 
   if (int13_read_sector(0,0,1,buf)==0)
     {
-      for (i=0;i<512;i++)
+      for (i=0;i<BUFFER_SIZE;i++)
 	{
 	  printf("%02x  ",buf[i]);
 	}
