@@ -106,7 +106,7 @@ void xmodem_write_block_to_disk(void)
   char* data_ptr=&buf[3];
   int fd;
 
-  fd=open(filename,O_CREAT|O_APPEND);
+  fd=open(filename,O_CREAT|O_APPEND|O_WRONLY);
   write(fd,data_ptr,512);
   close(fd);
 }
@@ -118,11 +118,23 @@ void xmodem_write_block_to_disk(void)
 void xmodem_state_check(void)
 {
   if (buf[0]!=0x01) // Check for SOH
-    xmodem_send_byte(0x15); // Send NAK
+    {
+      xmodem_send_byte(0x15); // Send NAK
+      state=BLOCK;
+      return;
+    }
   else if (buf[1]+buf[2]!=0xFF) // Check the checksum
-    xmodem_send_byte(0x15); // Send NAK.
+    {
+      xmodem_send_byte(0x15); // Send NAK
+      state=BLOCK;
+      return;
+    }
   else if (xmodem_check_crc()==0) // Check the CRC.
-    xmodem_send_byte(0x15); // Send Nak.
+    {
+      xmodem_send_byte(0x15); // Send NAK
+      state=BLOCK;
+      return;
+    }
 
   // If we get here, block is reasonably ok, write out data payload.
   // And send an ACK.
