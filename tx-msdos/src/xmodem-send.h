@@ -8,4 +8,9 @@
  * Licensed under GPL Version 3.0
  */
 
-#include "xmodem.h"
+#ifndef XMODEM_H
+#define XMODEM_H
+
+typedef enum _state {START, BLOCK, CHECK, REBLOCK, END} ProtocolState;
+
+#endif /* XMODEM_H */

@@ -11,3 +11,8 @@
 #include "int13.h"
 #include "int14.h"
 #include "xmodem.h"
+
+int main(int argc, char* argv[])
+{
+  return 0;
+}
