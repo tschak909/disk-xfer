@@ -28,7 +28,7 @@ unsigned char int13_disk_geometry(DiskGeometry* geometry)
   geometry->c|=((regs.h.cl)&0xC0)<<2; // Get upper two bits of cylinder count.
   geometry->h=regs.h.dh;
   geometry->s=regs.h.cl&0x3F;         // mask off high order bits of cylinder count (upper 2-bits)
-  
+
   // 0 if successful, 1 if not.
   return regs.x.cflag;
 }
@@ -45,7 +45,8 @@ unsigned char int13_read_sector(short c, unsigned char h, unsigned char s, char*
   regs.h.dl=0x80;                    // first hd
   regs.x.bx=(short)buf;
   regs.h.ch=c&0xFF;                  // cyl low
-  regs.h.cl=s | ((c >> 2) & 0xC0);   // sector / cyl high
+  regs.h.cl|=s | ((c >> 2)&0xC0);        // sector / cyl high */
+  
   int86(0x13,&regs,&regs);
 
   // 0 if successful, 1 if not.
