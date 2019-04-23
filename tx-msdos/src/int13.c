@@ -45,8 +45,8 @@ unsigned char int13_read_sector(short c, unsigned char h, unsigned char s, char*
   regs.h.dl=0x80;                    // first hd
   regs.x.bx=(short)buf;
   regs.h.ch=c&0xFF;                  // cyl low
-  regs.h.cl|=s | ((c >> 2)&0xC0);        // sector / cyl high */
-  
+  regs.h.cl=s;
+  regs.h.cl|=((c >> 2)&0xC0);        // sector / cyl high */
   int86(0x13,&regs,&regs);
 
   // 0 if successful, 1 if not.
