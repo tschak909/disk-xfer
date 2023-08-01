@@ -39,14 +39,12 @@ unsigned short xmodem_calc_crc(char* ptr, short count)
     {
       crc = crc ^ (unsigned short) *ptr++ << 8;
       i=8;
-      do
-	{
-	  if (crc & 0x8000)
-	    crc=crc<<1^0x1021;
-	  else
-	    crc=crc<<1;
-	}
-      while(--i);
+      do {
+        if (crc & 0x8000)
+          crc = crc << 1 ^ 0x1021;
+        else
+          crc = crc << 1;
+      } while (--i);
     }
   return crc;
 }
@@ -67,22 +65,22 @@ void xmodem_send(void)
   
   while (state!=END)
     {
-      switch(state)
-	{
-	case START:
-	  xmodem_state_start();
-	  break;
-	case BLOCK:
-	  xmodem_state_block();
-	  break;
-	case CHECK:
-	  xmodem_state_check();
-	  break;
-	case REBLOCK:
-	  break;
-	case END:
-	  break;
-	}
+      switch (state)
+        {
+          case START:
+            xmodem_state_start();
+            break;
+          case BLOCK:
+            xmodem_state_block();
+            break;
+          case CHECK:
+            xmodem_state_check();
+            break;
+          case REBLOCK:
+            break;
+          case END:
+            break;
+        }
     }
   
   free(buf);
@@ -101,14 +99,14 @@ void xmodem_state_start()
       delay(1);
       wait_time--;
       if (int14_data_waiting()!=0)
-	{
-	  if (int14_read_byte()=='C')
-	    {
-	      state=BLOCK;
-	      printf("Starting Transfer.\n");
-	      return;
-	    }
-	}
+        {
+          if (int14_read_byte()=='C')
+            {
+              state=BLOCK;
+              printf("Starting Transfer.\n");
+              return;
+            }
+        }
     }
   printf("Trying Again...\n");
 }
@@ -129,7 +127,7 @@ void xmodem_state_block(void)
       int14_send_byte(0xFF-block_num); // 0xFF - BLOCK # (simple checksum)
 
       for (i=0;i<512;i++)     // Send the data
-	int14_send_byte(buf[i]);
+        int14_send_byte(buf[i]);
 
       calced_crc=xmodem_calc_crc(buf,512);
       int14_send_byte((calced_crc>>8));       // CRC Hi
@@ -155,25 +153,25 @@ void xmodem_state_check(void)
     {
       b=int14_read_byte();
       switch (b)
-	{
-	case 0x06: // ACK
-	  printf("ACK!\n");
-	  block_num++;
-	  block_num&=0xff;
-	  state=BLOCK;
-	  xmodem_set_next_sector();  // so if we're at end, it can be overridden.
-	  break;
-	case 0x15: // NAK
-	  printf("NAK!\n");
-	  state=BLOCK;  // Resend.
-	  break;
-	case 0x18: // CAN
-	  printf("CANCEL!\n");
-	  state=END;   // end.
-	  break;
-	default:
-	  printf("Unknown Byte: 0x%02d: %c",b,b);
-	}
+        {
+        case 0x06: // ACK
+          printf("ACK!\n");
+          block_num++;
+          block_num&=0xff;
+          state=BLOCK;
+          xmodem_set_next_sector();  // so if we're at end, it can be overridden.
+          break;
+        case 0x15: // NAK
+          printf("NAK!\n");
+          state=BLOCK;  // Resend.
+          break;
+        case 0x18: // CAN
+          printf("CANCEL!\n");
+          state=END;   // end.
+          break;
+        default:
+          printf("Unknown Byte: 0x%02d: %c",b,b);
+        }
     }
 }
 
@@ -186,15 +184,15 @@ void xmodem_set_next_sector(void)
     {
       sector=1;
       if (head>=geometry.h)
-	{
-	  head=0;
-	  if (cylinder>geometry.c)
-	    state=END;
-	  else
-	    cylinder++;
-	}
+        {
+          head=0;
+          if (cylinder>geometry.c)
+            state=END;
+          else
+            cylinder++;
+        }
       else
-	head++;
+        head++;
     }
   else
     sector++;

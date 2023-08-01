@@ -38,14 +38,12 @@ unsigned short xmodem_calc_crc(char* ptr, short count)
     {
       crc = crc ^ (unsigned short) *ptr++ << 8;
       i=8;
-      do
-	{
-	  if (crc & 0x8000)
-	    crc=crc<<1^0x1021;
-	  else
-	    crc=crc<<1;
-	}
-      while(--i);
+      do {
+        if (crc & 0x8000)
+          crc = crc << 1 ^ 0x1021;
+        else
+          crc = crc << 1;
+      } while (--i);
     }
   return crc;
 }
@@ -165,21 +163,21 @@ int xmodem_receive(char* filename)
   while (state!=END)
     {
       switch(state)
-	{
-	case START:
-	  xmodem_state_start();
-	  break;
-	case BLOCK:
-	  xmodem_state_block();
-	  break;
-	case CHECK:
-	  xmodem_state_check();
-	  break;
-	case REBLOCK:
-	  break;
-	case END:
-	  break;
-	}
+        {
+        case START:
+          xmodem_state_start();
+          break;
+        case BLOCK:
+          xmodem_state_block();
+          break;
+        case CHECK:
+          xmodem_state_check();
+          break;
+        case REBLOCK:
+          break;
+        case END:
+          break;
+        }
     }
 
   // We're done.
