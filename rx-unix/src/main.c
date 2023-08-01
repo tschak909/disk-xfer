@@ -19,8 +19,8 @@ typedef enum _state {START, BLOCK, CHECK, REBLOCK, END} ProtocolState;
 
 ProtocolState state=START;
 int serial_fd;
+int outfile_fd;
 unsigned char b;
-char* filename;
 long block_num=1;
 
 unsigned char* buf;
@@ -108,11 +108,8 @@ unsigned char xmodem_check_crc(void)
 void xmodem_write_block_to_disk(void)
 {
   char* data_ptr=&buf[3];
-  int fd;
 
-  fd=open(filename,O_CREAT|O_APPEND|O_WRONLY);
-  write(fd,data_ptr,512);
-  close(fd);
+  write(outfile_fd,data_ptr,512);
 }
 
 /**
@@ -157,10 +154,14 @@ void xmodem_state_check(void)
 /**
  * Main protocol entry point
  */
-int xmodem_receive(void)
+int xmodem_receive(char* filename)
 {
+  outfile_fd=open(
+      filename,
+      O_CREAT|O_TRUNC|O_WRONLY,
+      S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
   buf=malloc(BUFFER_SIZE);
-  
+
   while (state!=END)
     {
       switch(state)
@@ -180,9 +181,10 @@ int xmodem_receive(void)
 	  break;
 	}
     }
-  
+
   // We're done.
   free(buf);
+  close(outfile_fd);
   return 0;
 }
 
@@ -228,7 +230,6 @@ int main(int argc, char* argv[])
   else
     {
       termio_init(argv[1]);
-      filename=argv[2];
-      return xmodem_receive();
+      return xmodem_receive(argv[2]);
     }
 }
