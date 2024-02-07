@@ -1,4 +1,4 @@
-TARGET_EXEC ?= tx.com
+TARGET_EXEC ?= image.com
 
 BUILD_DIR ?= ./build
 SRC_DIRS ?= ./src
